@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>购物车页</title>
+	<link rel="stylesheet" href="__lib__/iconfont/css/iconfont.css">
+	<link rel="stylesheet" href="__lib__/bootstrap4/css/bootstrap.css">
+	<link rel="stylesheet" href="__index__/css/base.css">
+	<link rel="stylesheet" href="__index__/css/footer.css">
+	<link rel="stylesheet" href="__index__/css/shopcart.css">
+</head>
+<body>
+<!--导航栏部分-->
+<div class="top-bar">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4 col-12">
+				<ul class="clearfix" id="ECS_MEMBERZONE">
+					{empty name="$Think.session.member"}
+					<li><a href="{:url('member/login')}">请先登录</a></li>
+					<li><a href="{:url('member/register')}">免费注册</a></li>
+					{else/}
+					<li><a href="#">
+						{$Think.session.member.phone} | {$Think.session.member.memberName}
+					</a></li>
+					<li><a href="{:url('member/logout')}" onClick="return confirm('是否确认退出当前账号？');">退出</a></li>
+					{/empty}
+				</ul>
+			</div>
+			<div class="col-md-8 col-12">
+				<ul class="bd-list clearfix">
+					<li><a href="#">客户服务</a></li>
+					<li><a href="#">我的收藏</a></li>
+					<li><a href="#">我的浏览</a></li>
+					<li><a href="{:url('order/myorder')}">我的订单</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<!--logo部分-->
+<div class="container">
+	<div class="row">
+		<div class="col-lg-4 col-sm-6 col-12">
+			<a href="https://blog.csdn.net/qq_43290318">
+				<img src="__index__/img/logo.png" style="max-height: 92px;" alt=""/>
+			</a>
+			<a href="https://blog.csdn.net/qq_43290318">
+				<img src="__index__/img/ecsc-join.gif" style="max-height: 92px;" alt=""/>
+			</a>
+		</div>
+		<div class="col-lg-3 col-sm-6 col-12">
+			<div class="row ml-1" style="margin-top: 1.8rem">
+				<p style="color: #808080;font-size: 1.1rem">购物车（共有</p>
+				&nbsp;<p style="color: red; font-size: 1.1rem" id="cartItemCount">{$itemCount}</p>&nbsp;
+				<p style="color: #808080;font-size: 1.1rem">件商品）</p>
+			</div>
+		</div>
+		<div class="col-lg-5 col-12">
+			<form id="searchForm" method="get" action="{:url('goods/list')}">
+				<div class="input-group mt-4">
+					<input name="goodsName" id="keyword" type="text" class="form-control search" {notempty name="$conds.goodsName" placeholder="搜索商品名"
+						   }value="{$conds.goodsName}" {/notempty}/>
+					<div class="input-group-append">
+						<button class="btn btn-primary" type="submit" id="button-addon2">搜索</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<hr class="mt-3 mb-0" />
+<!--购物车部分-->
+<div class="shopcart-body">
+	<div class="container">
+		<div class="row">
+			<!--步骤-->
+			<div class="col-12 mb-2">
+				<span class="span-orange pb-3 mt-3">1.我的购物车</span>
+				<!--                    <i class="myiconfont pb-3"></i>-->
+				<i class="iconfont icon-arrow-right-alt pb-3" style="color: #ff8f23;"></i>
+				<span class="span-grey pb-3 mt-3" >2.填写订单信息</span>
+				<!--                    <i class="myiconfont2 pb-3"></i>-->
+				<i class="iconfont icon-arrow-right-alt pb-3" style="color: #d2d2d2;"></i>
+				<span class="span-grey pb-3 mt-3">3.成功提交订单</span>
+			</div>
+			<!--购物车部分-->
+			<div class="col-12 pt-2 pb-2">
+				<!--标签-->
+				<div class="row text-center pt-3 pb-3" style="background-color: #fff">
+					<div class="custom-control custom-checkbox otherlist" style="color: #8c8c8c" ectype="ckList">
+					  	<input type="checkbox" class="custom-control-input" id="cart-selectall" 
+					  		checked onChange="checkAll()" ectype="ckAll">
+					  	<label class="custom-control-label" for="cart-selectall">全选</label>
+					</div>
+					<div class="shoplist text-left pl-4" style="color: #8c8c8c">商品</div>
+					<div class="dislist" style="color: #8c8c8c">单价（元）</div>
+					<div class="dislist" style="color: #8c8c8c">数量</div>
+					<div class="dislist" style="color: #8c8c8c">小计</div>
+					<div class="dislist" style="color: #8c8c8c">操作</div>
+				</div>
+				<!--商品-->
+				<form id="cartForm" method="post" action="{:url('order/index')}">
+					<div class="text-center mt-3 mb-3 pb-4" style="background-color: #fff">
+						{foreach $itemList as $item}
+						<div class="row item-single">
+							<div class="custom-control custom-checkbox mt-4 otherlist">
+								  <input type="checkbox" class="custom-control-input" value="{$item.cartId}"
+									   onChange="checkOne(this)" id="checkItem_{$item.cartId}" name="checkItem[]">
+								  <label class="custom-control-label" for="checkItem_{$item.cartId}"></label>
+							</div>
+							<div class="mt-4 shoplist">
+								<div class="media">
+									<a href="{:url('goods/index')}?id={$item.goodsId}" target="_blank"><img src="__public__/{$item.mainPic}" alt="" style="width: 70px;height: 70px"/></a>
+									<a href="{:url('goods/index')}?id={$item.goodsId}" class="media-body ml-3 mr-4" target="_blank">{$item.goodsName}</a>
+								</div>
+							</div>
+							<div class="mt-4 dislist1" id="goods_price_8"><em>¥</em><span name="price">{$item.salePrice}</span></div>
+							<div class="mt-4 dislist2 d-flex justify-content-center">
+								<a class="btn-reduce" href="javascript:void(0)" onclick="addNum(this, -1, {$item.last});
+                                		requestUpdateCount({$item.cartId}, $(this).siblings('input[name=goodsNum]').val(), this)">
+									<strong>-</strong>
+								</a>
+								<input class="text buy-num" type="text" value="{$item.count}"
+									   name="goodsNum" ectype="number" defaultnumber="1"/>
+								<a class="btn-add" href="javascript:void(0)" onClick="addNum(this, 1, {$item.last});
+                                    	requestUpdateCount({$item.cartId}, $(this).siblings('input[name=goodsNum]').val(), this)">
+									<strong>+</strong>
+								</a>
+							</div>
+							<div class="mt-4 dislist1" id="goods_subtotal_8"><em>¥</em><span
+									name="subtotal">{$item.count * $item.salePrice}</span></div>
+							<div class="mt-4 dislist">
+								<a class="cart-remove" href="javascript:void(0)"
+								   onClick="requestDeleteOne({$item.cartId}, this)"
+								   ectype="cartOperation">删除</a>
+								<a class="cart-store" href="javascript:void(0)" ectype="cartOperation">收藏</a>
+							</div>
+						</div>
+						{/foreach}
+					</div>
+				</form>
+				<!--商品底部-->
+				<div class="row text-center mb-5 pb-2" style="background-color: #fff">
+					<div class="my-col mt-4">
+						<a href="javascript:void(0)" onClick="requestDeleteMore()"
+						   data-dialog="remove_collect_dialog"
+						   data-divid="cart-remove-batch"
+						   data-removeurl="ajax_dialog.php?act=delete_cart_goods"
+						   data-collecturl="ajax_dialog.php?act=drop_to_collect"
+						   data-title="删除">删除选中商品</a>
+					</div>
+					<div class="my-col mt-4">
+						<a href="#"
+						   data-dialog="remove_collect_dialog"
+						   data-divid="cart-collect-batch"
+						   data-removeurl="ajax_dialog.php?act=delete_cart_goods"
+						   data-collecturl="ajax_dialog.php?act=drop_to_collect"
+						   data-title="关注">移到我的收藏</a>
+					</div>
+					<div class="my-col mt-4">
+						<div style="color: #808080">已选择<em ectype="cartNum" id="selectedCount" style="color: red;font-style: normal">0</em>件商品</div>
+					</div>
+					<div class="my-col mt-4">
+						<p style="color: #808080">已节省:</p>
+					</div>
+					<div class="my-col mt-3">
+						<div id="total_desc" style="color: #808080">总价(不含运费):<em id="totalCost" ectype="goods_total" style="color: red;font-style: normal;font-size: 25px"></em></div>
+					</div>
+					<div class="my-col mt-3 pl-2">
+						<input type="button" name="goPay" class="btn btn-danger" value="提交订单" id="goPay" onClick="document:cartForm.submit()"/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+	<!-- 引入公共的footer部分 -->
+    {include file="common/footer" /}
+
+<!-- js的顺序不能乱 -->
+<script src="__lib__/jquery/jquery.min.js"></script>
+<!-- popper.min.js依赖jquery -->
+<script src="__lib__/popper/popper.min.js"></script>
+<!-- bootstrap.min.js依赖jquery -->
+<script src="__lib__/bootstrap4/js/bootstrap.min.js"></script>
+
+<!-- 引入bootbox，基于bootstrap的模态框封装 -->
+<script src="__lib__/bootbox/bootbox.min.js"></script>
+
+<script type="text/javascript">
+	$(function() {
+		// 加载页面后全部勾选
+		checkAll();
+
+		// 监听数量的输入框，绑定输入框的keyup和afterpaste事件
+		$("input[name='goodsNum']").on("keyup afterpaste", function() {
+			// 如果输入框输入非数字的字符，立马将该字符替换为空
+			var corrected = $(this).val().replace(/[^\d]/g,'');
+			if (corrected == '' || corrected == 0) {
+				corrected = 1;
+			}
+
+			$(this).val(corrected);
+
+			/*
+            // 服务端更新后，页面才更新
+            // 更新小计和总价
+            $goodsItem = $(this).parents(".item-single");
+            // 单价
+            var price = parseFloat($goodsItem.find("span[name='price']").text());
+            // 数量
+            var num = parseInt($(this).val());
+            $goodsItem.find("span[name='subtotal']").html( (price*num).toFixed(2) );
+
+            // 如果当前商品勾选了。那么应该也更新总价
+            if ($goodsItem.find("input[name='checkItem']").prop("checked")) {
+                calTotalCost();
+            }
+            */
+		});
+	});
+
+	function checkAll() {
+		//console.log(allChk);
+		// jquery-1.4.2 没有prop()方法
+		// 注意测试，发现1.9.1无法使用attr()操作checked属性
+
+		// “全选”这个复选框的状态
+		var isSelectedAll = $("#cart-selectall").prop("checked");
+		$items = $("input[name='checkItem[]']");
+		// 全部复选框选中
+		$items.prop("checked", isSelectedAll);
+		// 更改 已勾选复选框的数量
+		$("#selectedCount").html(isSelectedAll ? $items.length : 0);
+		// 重新计算总价
+		calTotalCost();
+	}
+
+	function checkOne(cur) {
+		// 标志变量：是否已经全部选中
+		var isAllSelected = true;
+		// 当改变当前复选框的状态时，判断是否所有复选框状已经全部选中
+		// 如果是，改变“全选”这个复选框的状态
+		$("input[name='checkItem[]']").each(function() {
+			if (!$(this).prop("checked")) {
+				isAllSelected = false;
+			}
+		});
+		$("#cart-selectall").prop("checked", isAllSelected);
+		$("#selectedCount").html($("input[name='checkItem[]']:checked").length);
+		// 重新计算总价
+		calTotalCost();
+	}
+
+	// 计算勾选商品的总价
+	function calTotalCost() {
+		var total = 0;
+		$("span[name='price']").each(function(index, element) {
+			// 判断是否勾选
+			if ($("input[name='checkItem[]']").eq(index).prop("checked")) {
+				var price = parseFloat($(this).text()); // 单价，浮点数
+				// 注意不要用[]来取数组的某个元素，那样取出来是html代码，而并非jquery对象
+				var num = parseInt($("input[name='goodsNum']").eq(index).val()); // 数量，整数
+				total += (price * num);
+			}
+		});
+		//console.log(total);
+		$("#totalCost").html(total.toFixed(2));
+	}
+
+	// 加减商品数量
+	function addNum(obj, step, max) { // obj：当前对象  step：要加减的值	max：最大值
+		//console.log(num);
+
+		$goodsNum = $(obj).siblings("input[name='goodsNum']");
+		var cur = parseInt($goodsNum.val()); // 当前的数量
+		//console.log(cur);
+		var corrected = 0;
+		if (step > 0) {
+			corrected = cur+step > max ? max : (cur+step);
+		} else {
+			corrected = cur+step < 1 ? 1 : (cur+step);
+		}
+		$goodsNum.val(corrected);
+
+	}
+
+	// 更新小计和总价
+	// 服务端更新后，页面才更新
+	function updateData(obj) { // obj 是“更新”的按钮
+		$goodsItem = $(obj).parents(".item-single");
+		// 单价
+		var price = parseFloat($goodsItem.find("span[name='price']").text());
+		// 数量
+		var num = parseInt($goodsItem.find("input[name='goodsNum']").val());
+		$goodsItem.find("span[name='subtotal']").html( (price*num).toFixed(2) );
+
+		// 如果当前商品勾选了。那么应该也更新总价
+		if ($goodsItem.find("input[name='checkItem[]']").prop("checked")) {
+			calTotalCost(); // 更新总价
+		}
+	}
+
+	function requestUpdateCount(cartId, newCount, obj) {
+		//console.log(newCount);
+		$.ajax({
+			type: "post",
+			url: "{:url('cart/updateNum')}",
+			data: {
+				cartId: cartId,
+				count : newCount
+			},
+			success: function(res) {
+				//console.log(res);
+				if (res.status) {
+					//alert('修改数量成功');
+					bootbox.alert({
+						title: '提示',
+						message: '修改数量成功',
+						buttons: {
+						   ok: {
+							   label: '确认',
+							   className: 'btn btn-outline-success'
+						   }
+						}
+					});
+					
+					// 重新计算小计和总价
+					updateData(obj);
+				} else {
+					//alert('修改数量失败：' + res.msg);
+					bootbox.alert({
+						title: '提示',
+						message: '修改数量失败：' + res.msg,
+						buttons: {
+						   ok: {
+							   label: '确认',
+							   className: 'btn btn-outline-danger'
+						   }
+						}
+					});
+				}
+			}
+		});
+	}
+
+	function requestDeleteOne(cartId, obj) {
+		bootbox.confirm({
+		    title: "确认",
+			message: "是否将该商品从购物车中移除？",
+		    buttons: {
+		        confirm: {
+		            label: '确认',
+		            className: 'btn-outline-success'
+		        },
+		        cancel: {
+		            label: '取消',
+		            className: 'btn-outline-danger'
+		        }
+		    },
+		    callback: function (result) {
+		    	//console.log('This was logged in the callback: ' + result);
+		    	// 确认的时候，result为true
+		    	if (result) {
+		    		$.ajax({
+						type: "post",
+						url: "{:url('cart/deleteOne')}",
+						data: {
+							cartId: cartId
+						},
+						success: function(res) {
+							console.log(res);
+							if (res.status) {
+								$(obj).parents(".item-single").remove();
+								// 重新计算总价
+								calTotalCost();
+								// 更改 已勾选复选框的数量
+								$("#selectedCount").html($("input[name='checkItem[]']:checked").length);
+								// 更改购物车中的商品种树
+								$("#cartItemCount").html(res.data);
+							} else {
+								alert(res.msg);
+							}
+						}
+					});
+		    	}
+		    }
+		});
+	}
+
+	function requestDeleteMore() {
+		bootbox.confirm({
+		    title: "确认",
+			message: "是否将所选商品从购物车中移除？",
+		    buttons: {
+		        confirm: {
+		            label: '确认',
+		            className: 'btn-outline-success'
+		        },
+		        cancel: {
+		            label: '取消',
+		            className: 'btn-outline-danger'
+		        }
+		    },
+		    callback: function (result) {
+		    	if (result) {
+		    		var cartIds = $("input[name='checkItem[]']:checked")
+							.map(function() {
+								return $(this).val()
+							}).get();
+					//console.log(cartIds);
+					$.ajax({
+						type: "post",
+						url: "{:url('cart/deleteMore')}",
+						data: {
+							cartIds: cartIds
+						},
+						success: function(res) {
+							console.log(res);
+							if (res.status) {
+								$("input[name='checkItem[]']:checked").parents(".item-single").remove();
+								// 重新计算总价
+								calTotalCost();
+								// 更改 已勾选复选框的数量
+								$("#selectedCount").html($("input[name='checkItem[]']:checked").length);
+								// 更改购物车中的商品种树
+								$("#cartItemCount").html(res.data);
+							} else {
+								alert(res.msg);
+								window.location.reload();
+							}
+						}
+					});
+		    	}
+		    }
+		});
+	}
+</script>
+</body>
+</html>
