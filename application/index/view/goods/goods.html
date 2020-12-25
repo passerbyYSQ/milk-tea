@@ -23,13 +23,53 @@
     <!-- ... -->
 
     <style type="text/css">
-		/* 小屏幕底下等比缩放，使图片适应小屏幕，但是表格不会适应，超出部分会看不见  */
+		/*	使富文本，尽量适应小屏幕 
+		小屏幕底下等比缩放，使图片适应小屏幕，但是表格不会适应，超出部分会看不见  */
 		.goods_details div, .goods_details img {
 			width: auto;
 		    height: auto;
 		    max-width: 100%;
 		    max-height: 100%;
 		}
+		/* 奶茶有关糖度、温度等参数选项，用li模拟radio。修改样式 */
+        .list-group-item {
+            padding: 8px 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        /* 选中li */
+        .selected {
+            font-weight:bold;
+            background: url('__index__/img/checked.png') no-repeat right bottom;
+        }
+        /* 数量加减按钮 */
+        .btn-reduce {
+            width: 22px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border: 1px solid #d2d2d2;
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+        }
+        .btn-add {
+            width: 22px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border: 1px solid #d2d2d2;
+            border-left: none;
+            border-radius: 0 4px 4px 0;
+        }
+        /* 数量文本框 */
+        .buy-num {
+            width: 28px;
+            padding: 0 2px;
+            border: 1px solid #d2d2d2;
+            height: 28px;
+            outline: 0;
+            text-align: center;
+        }
     </style>
 
 </head>
@@ -64,22 +104,22 @@
    </div>
 
 <div class="container">
-    <div class="container p-2">
+    <div class="container p-3">
         <!--  logo + 搜索框      -->
         <div class="row">
             <div class="col-lg-4 col-sm-12 col-12">
                 <a href="https://blog.csdn.net/qq_43290318">
-                    <img src="__index__/img/logo.png" style="max-height: 92px;">
+                    <img src="__index__/img/logo.png" style="max-height: 80px;">
                 </a>
                 <a href="https://blog.csdn.net/qq_43290318">
-                    <img src="__index__/img/ecsc-join.gif" style="max-height: 92px;">
+                    <img src="__index__/img/ecsc-join.gif" style="max-height: 80px;">
                 </a>
             </div>
             <div class="col-lg-5 col-sm-8 col-12">
                 <form id="searchForm" method="get" action="{:url('goods/list')}">
 		            <div class="input-group mt-4">
 		            	<input type="text" name="goodsName" class="form-control search" placeholder="请输入商品名称关键词"
-		                	{notempty name="$conds.goodsName" placeholder="搜索商品名"}value="{$conds.goodsName}" {/notempty}>
+		                	{notempty name="$conds.goodsName"}value="{$conds.goodsName}" {/notempty}>
 		                <div class="input-group-append">
 		                    <button class="btn btn-primary" type="submit" id="button-addon2">搜索</button>
 		                </div>
@@ -95,30 +135,33 @@
                 </div>
             </div>
         </div>
+        
         <!--   导航栏     -->
-        <nav class="navbar navbar-expand-sm navbar-light mt-2">
-            <a class="navbar-brand" href="{:url('index/index')}">全部商品分类</a>
+        <nav class="navbar navbar-expand-sm navbar-light mt-1">
+            <a class="navbar-brand" href="{:url('index/index')}">全部产品</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item ">
-                        <a class="nav-link" href="{:url('index/index')}">首页</a>
+                        <a class="nav-link" href="{:url('index/index')}">饮品</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="#">女人街</a>
+                        <a class="nav-link " href="#">新品&热销</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">品牌专区</a>
+                        <a class="nav-link" href="#">周边礼品</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">聚划算</a>
+                        <a class="nav-link" href="#">旗下门店</a>
                     </li>
                 </ul>
             </div>
         </nav>
+        
     </div>
+    
     <!--商品价格详情-->
     <div class="row no-gutters">
         <!--图片-->
@@ -191,35 +234,111 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="col-12 row">
-                        <div class="wordsmall1 col-4 col-sm-2 mt-3">数量</div>
-                        <div class="col-6 col-sm-9 row">
-                            <div class="amount-warp col-12">
-                                <input class="text buy-num" ectype="quantity" value="1"
-                                       onkeyup="this.value=this.value.replace(/[^\d]/g,'')" onafterpaste="this.value=this.value.replace(/[^\d]/g,'')"
-                                       name="number" defaultnumber="1">
-                                <div class="a-btn mr-3 ">
-                                    <a href="javascript:addCount(1);" class="btn-add" ectype="btnAdd">
-                                        <i class="iconfont icon-up"></i></a>
-                                    <a href="javascript:addCount(-1);" class="btn-reduce"
-                                       ectype="btnReduce"><i class="iconfont icon-down"></i></a>
-                                    <input type="hidden" name="perNumber" id="perNumber" ectype="perNumber" value="0">
-                                    <input type="hidden" name="perMinNumber" id="perMinNumber" ectype="perMinNumber" value="1">
+                        <div class="wordsmall1 col-4 col-sm-2 mt-3 pt-2">规格</div>
+                        <div class="service-item-1 col-6 col-sm-8">
+                            <ul class="list-group list-group-horizontal-sm">
+                                <li class="list-group-item selected">
+                                    <a href="javascript:void(0);" >
+                                        <span>大杯</span>
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0);" >
+                                        <span>中杯</span>
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0);" >
+                                        <span>小杯</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 row">
+                        <div class="wordsmall1 col-4 col-sm-2 mt-3 pt-2">甜度</div>
+                        <div class="service-item-1 col-6 col-sm-8">
+                            <ul class="list-group list-group-horizontal-sm">
+                                <li class="list-group-item selected">
+                                    <a href="javascript:void(0);" >
+                                        <span>标准糖</span>
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0);" >
+                                        <span>半糖</span>
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0);" >
+                                        <span>少糖</span>
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0);" >
+                                        <span>不加糖</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 row">
+                        <div class="wordsmall1 col-4 col-sm-2 mt-3 pt-2">温度</div>
+                        <div class="service-item-1 col-6 col-sm-8">
+                            <ul class="list-group list-group-horizontal-sm">
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0);" >
+                                        <span>热</span>
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0);" >
+                                        <span>温</span>
+                                    </a>
+                                </li>
+                                <li class="list-group-item selected">
+                                    <a href="javascript:void(0);" >
+                                        <span>冰</span>
+                                    </a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0);" >
+                                        <span>去冰</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 row">
+                        <div class="wordsmall1 col-4 col-sm-2 mt-3 pt-2">数量</div>
+                        <div class="service-item-1 col-6 col-sm-8">
+                            <div class="mt-1 d-flex justify-content-left">
+                                <a class="btn-reduce" href="javascript:addCount(-1);">
+                                    <strong>-</strong>
+                                </a>
+                                <input class="text buy-num" type="text" value="1" name="goodsNum"
+                                       onkeyup="this.value=this.value.replace(/[^\d]/g,'')"
+                                       onafterpaste="this.value=this.value.replace(/[^\d]/g,'')">
+                                <a class="btn-add" href="javascript:addCount(1);" >
+                                    <strong>+</strong>
+                                </a>
+
+                                <div class="wordsmall1">
+                                    	库存
+                                    <em id="goods_attr_num" ectype="goods_attr_num">
+                                        {$goods.count}
+                                    </em>&nbsp;
+                                    	个
                                 </div>
-                                <input name="confirm_type" id="confirm_type" type="hidden"
-                                       value="3" />
-                            </div>
-                            <div class="mt-3 wordsmall1">
-                                库存
-                                <em id="goods_attr_num" ectype="goods_attr_num">
-<!--                                    后面修改-->
-                                    {$goods.count}
-                                </em>&nbsp;
-                                个
                             </div>
                         </div>
                     </div>
-<!--                    两个按钮-->
+                    
                     <div class="col-12 row">
                         <div class="col-md-4 col-12">
                             <button class="btn btn-warning btn-size">立即购买</button>
@@ -228,15 +347,9 @@
                             <a href="javascript:addToCart({$Think.get.id})">
                             <button class="btn btn-danger btn-size2">
                                 <i class="iconfont icon-carts"></i>
-                                加入购物车
+                               	 加入购物车
                             </button>
                             </a>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="row mt-4">
-                            <div class="wordsmall1 col-4 col-sm-2">温馨提示</div>
-                            <div class="wordsmall1 col-7 col-sm-8 ">不支持退换货服务</div>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -325,6 +438,12 @@
 <script src="__lib__/bootbox/bootbox.min.js"></script>
 
 <script type="text/javascript">
+	$(function () {
+	    $('.service-item-1 li.list-group-item').click(function() {
+	        $(this).siblings('li').removeClass('selected');
+	        $(this).addClass('selected');
+	    });
+	});
 
     function addToCart(goodsId) {
         // 将商品添加到购物车

@@ -55,5 +55,14 @@ class Login extends Controller {
             ]);
         }
     }
+    
+    public function logout() {
+        if (empty(session('admin'))) {
+            $this->error('请先登录');
+        }
+        
+        session('admin', null);
+        $this->success('退出成功', 'index/goods/list');
+    }
 }
 ?>

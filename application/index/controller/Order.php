@@ -237,8 +237,8 @@ class Order extends Controller {
             // 提交事务
             Db::commit();
             
-            $this->success('下单成功，请前往付款', 'order/myorder');
-            
+            //$this->success('下单成功，请前往付款', 'order/myorder');
+            $this->success('下单成功，暂不支持付款', 'goods/list');
         } catch (Exception $e) {
             // 回滚事务
             Db::rollback();

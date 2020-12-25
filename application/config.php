@@ -15,7 +15,7 @@ return [
     // +----------------------------------------------------------------------
 
     // 应用调试模式。开发时设置为true，部署上线后设置为false
-    'app_debug'              => false,
+    'app_debug'              => true,
     // 应用Trace
     'app_trace'              => false,
     // 应用模式状态
@@ -149,16 +149,16 @@ return [
     // 视图输出字符串内容替换
     'view_replace_str'       => [
         // 公共类库的静态资源 
-        '__lib__' => '/boot-shop/public/static/lib', 
+        '__lib__' => '/milk-tea/public/static/lib', 
         // 后台相关的静态资源
-        '__admin__' => '/boot-shop/public/static/assets',
+        '__admin__' => '/milk-tea/public/static/assets',
         // 前台相关的静态资源
-        '__index__' => '/boot-shop/public/static/index',
+        '__index__' => '/milk-tea/public/static/index',
         // 用于异步请求的路径的拼接
-        '__public__' => '/boot-shop/public',
+        '__public__' => '/milk-tea/public',
         
         
-        '__root__' => '/boot-shop/public/static/style'
+        '__root__' => '/milk-tea/public/static/style'
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => THINK_PATH . 'tpl' . DS . 'dispatch_jump_self.tpl',
